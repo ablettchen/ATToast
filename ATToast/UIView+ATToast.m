@@ -69,15 +69,19 @@
         make.bottom.equalTo(messageLabel.mas_bottom).offset(style.insets.bottom);
         make.center.equalTo(self);
     }];
-
+    
     [self showToast:contentView duration:duration completion:completion];
 }
 
 - (void)showToast:(nonnull UIView *)toast duration:(NSTimeInterval)duration completion:(void(^__nullable)(void))completion {
+    toast.layer.transform = CATransform3DMakeScale(1.2f, 1.2f, 1.0f);
     [UIView animateWithDuration:0.2f
                           delay:0.f
-                        options:(UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction)
-                     animations:^{toast.alpha = 1.f;}
+                        options:(UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{
+                         toast.layer.transform = CATransform3DIdentity;
+                         toast.alpha = 1.f;
+                     }
                      completion:^(BOOL finished) {
                          dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                              [self hideToast:toast completion:completion];
