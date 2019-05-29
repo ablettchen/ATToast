@@ -74,6 +74,7 @@
 }
 
 - (void)showToast:(nonnull UIView *)toast duration:(NSTimeInterval)duration completion:(void(^__nullable)(void))completion {
+    [self bringSubviewToFront:toast];
     toast.layer.transform = CATransform3DMakeScale(1.2f, 1.2f, 1.0f);
     [UIView animateWithDuration:0.2f
                           delay:0.f

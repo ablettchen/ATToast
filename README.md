@@ -7,7 +7,20 @@
 
 ## Example
 
+![](https://github.com/ablettchen/ATToast/blob/master/Example/images/toast.gif)
+
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
+
+```Objective-C
+NSString *string = @"Be sure to run `pod lib lint ATToast.podspec' to ensure this is a valid spec before submitting.";
+NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:string];
+NSRange range = [string rangeOfString:@"pod lib lint ATToast.podspec"];
+[attributedString addAttribute:NSForegroundColorAttributeName value:[UIColor yellowColor] range:range];
+[attributedString addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:14] range:range];
+[attributedString addAttribute:NSUnderlineStyleAttributeName value:@(1) range:range];
+
+[self.view makeToastAttributed:attributedString];
+```
 
 ## Requirements
 
@@ -22,7 +35,7 @@ pod 'ATToast'
 
 ## Author
 
-ablettchen@gmail.com, ablett.chen@gmail.com
+ablett, ablett.chen@gmail.com
 
 ## License
 

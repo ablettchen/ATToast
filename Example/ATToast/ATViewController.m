@@ -48,7 +48,16 @@
 }
 
 - (void)showAction:(UIButton *)sender {
-    [self.view makeToast:@"Be sure to run `pod lib lint ATToast.podspec' to ensure this is a"];
+    
+    NSString *string = @"Be sure to run `pod lib lint ATToast.podspec' to ensure this is a valid spec before submitting.";
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:string];
+    NSRange range = [string rangeOfString:@"pod lib lint ATToast.podspec"];
+    [attributedString addAttribute:NSForegroundColorAttributeName value:[UIColor yellowColor] range:range];
+    [attributedString addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:14] range:range];
+    [attributedString addAttribute:NSUnderlineStyleAttributeName value:@(1) range:range];
+    
+    [self.view makeToastAttributed:attributedString];
+    
 }
 
 @end
