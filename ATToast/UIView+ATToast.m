@@ -1,0 +1,179 @@
+//
+//  UIView+ATToast.m
+//  ATCategories
+//
+//  Created by ablett on 2019/5/29.
+//
+
+#import "UIView+ATToast.h"
+#import <ATCategories/ATCategories.h>
+#import <Masonry/Masonry.h>
+
+@interface UIView ()
+@property (copy, nonatomic) void (^completionBlock)(void);
+@end
+
+@implementation UIView (ATToast)
+
+#pragma mark - privite
+
+- (void)makeToast:(nonnull NSString *)message duration:(NSTimeInterval)duration completion:(void(^__nullable)(void))completion {
+    [self makeToastAttributed:[[NSAttributedString alloc] initWithString:message] duration:duration completion:completion];
+}
+
+- (void)makeToastAttributed:(nonnull NSAttributedString *)message duration:(NSTimeInterval)duration completion:(void(^__nullable)(void))completion {
+    
+    ATToastStyle *style = [ATToastConfig defaultConfig].style;
+    
+    CGFloat messageWidth = [message.string widthForFont:style.font];
+    CGFloat estimateWidth = (messageWidth + style.insets.left + style.insets.right);
+    CGFloat width = (estimateWidth <= style.maxWidth)?estimateWidth:style.maxWidth;
+    
+    UIView *contentView = ({
+        UIView *view = [UIView new];
+        [self addSubview:view];
+        [view mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(width);
+        }];
+        [self addSubview:view];
+        view.layer.cornerRadius = style.cornerRadius;
+        view.clipsToBounds = YES;
+        view.layer.borderWidth = style.splitWidth;
+        view.layer.borderColor = style.splitColor.CGColor;
+        view.backgroundColor = style.backgroundColor;
+        view.alpha = 0.f;
+        view;
+    });
+    
+    [contentView setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+    [contentView setContentHuggingPriority:UILayoutPriorityFittingSizeLevel forAxis:UILayoutConstraintAxisVertical];
+    
+    UILabel *messageLabel = ({
+        UILabel *label = [UILabel new];
+        [contentView addSubview:label];
+        [label mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(contentView).inset(style.insets.top);
+            make.left.equalTo(contentView).inset(style.insets.left);
+            make.right.equalTo(contentView).inset(style.insets.right);
+        }];
+        label.backgroundColor = [UIColor clearColor];
+        label.font = style.font;
+        label.textColor = style.fontColor;
+        label.textAlignment = NSTextAlignmentCenter;
+        label.numberOfLines = 0;
+        label;
+    });
+    messageLabel.attributedText = message;
+    
+    [contentView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.bottom.equalTo(messageLabel.mas_bottom).offset(style.insets.bottom);
+        make.center.equalTo(self);
+    }];
+
+    [self showToast:contentView duration:duration completion:completion];
+}
+
+- (void)showToast:(nonnull UIView *)toast duration:(NSTimeInterval)duration completion:(void(^__nullable)(void))completion {
+    [UIView animateWithDuration:0.2f
+                          delay:0.f
+                        options:(UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction)
+                     animations:^{toast.alpha = 1.f;}
+                     completion:^(BOOL finished) {
+                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                             [self hideToast:toast completion:completion];
+                         });
+                     }];
+    
+}
+
+- (void)hideToast:(nonnull UIView *)toast completion:(void(^__nullable)(void))completion {
+    [UIView animateWithDuration:0.2f
+                          delay:0
+                        options:(UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionBeginFromCurrentState)
+                     animations:^{toast.alpha = 0.f;}
+                     completion:^(BOOL finished) {
+                         [toast removeFromSuperview];
+                         if (completion) {
+                             completion();
+                         }
+                     }];
+}
+
+#pragma mark - public
+
+- (void)makeToast:(nonnull NSString *)message {
+    [self makeToastAttributed:[[NSAttributedString alloc] initWithString:message]];
+}
+
+- (void)makeToastAttributed:(nonnull NSAttributedString *)message {
+    [self makeToastAttributed:message completion:nil];
+}
+
+- (void)makeToast:(nonnull NSString *)message completion:(void(^__nullable)(void))completion {
+    [self makeToastAttributed:[[NSAttributedString alloc] initWithString:message] completion:completion];
+}
+
+- (void)makeToastAttributed:(nonnull NSAttributedString *)message completion:(void(^__nullable)(void))completion {
+    [self makeToastAttributed:message duration:[ATToastConfig defaultConfig].duration completion:completion];
+}
+
+@end
+
+@implementation ATToastStyle
+
+- (instancetype)init {
+    self = [super init];
+    if (!self) return nil;
+    [self reset];
+    return self;
+}
+
+- (void)reset {
+    _insets = UIEdgeInsetsMake(10, 10, 10, 10);
+    _cornerRadius = 5.0;
+    _font = [UIFont systemFontOfSize:14];
+    _fontColor = UIColorHex(0xFFFFFFFF);
+    _splitColor = UIColorHex(0x333333FF);
+    _splitWidth = 1/[UIScreen mainScreen].scale;
+    _backgroundColor = UIColorHex(0x000000C2);
+    _maxWidth = 275.f;
+}
+
+@end
+
+@interface ATToastConfig ()
+@property (nonatomic, strong, readwrite, nonnull) ATToastStyle *style;
+@end
+@implementation ATToastConfig
+
+- (instancetype)init {
+    self = [super init];
+    if (!self) return nil;
+    self.style = [ATToastStyle new];
+    self.duration = 2.f;
+    return self;
+}
+
++ (instancetype)defaultConfig {
+    static ATToastConfig *_defaultConfig = nil;
+    static dispatch_once_t oncePredicate;
+    dispatch_once(&oncePredicate, ^{
+        _defaultConfig = [[self alloc] init];
+    });
+    return _defaultConfig;
+}
+
+- (void (^)(void (^ _Nonnull)(ATToastStyle * _Nonnull)))update {
+    __weak typeof(self) _self = self;
+    return ^void(void(^block)(ATToastStyle *style)) {
+        __strong typeof(_self) self = _self;
+        if (block) block(self.style);
+    };
+}
+
+- (void)resetStyle {
+    [self.style reset];
+}
+
+@end
+
