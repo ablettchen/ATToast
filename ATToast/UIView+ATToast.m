@@ -6,11 +6,21 @@
 //
 
 #import "UIView+ATToast.h"
+
+#if __has_include(<ATCategories/ATCategories.h>)
 #import <ATCategories/ATCategories.h>
+#else
+#import "ATCategories.h"
+#endif
+
+#if __has_include(<Masonry/Masonry.h>)
 #import <Masonry/Masonry.h>
+#else
+#import "Masonry.h"
+#endif
+
 
 @interface UIView ()
-@property (copy, nonatomic) void (^completionBlock)(void);
 @end
 
 @implementation UIView (ATToast)
