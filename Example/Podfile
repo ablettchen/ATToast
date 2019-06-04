@@ -8,7 +8,6 @@ target 'ATToast_Example' do
 
   target 'ATToast_Tests' do
     inherit! :search_paths
-
-    
   end
+  
 end

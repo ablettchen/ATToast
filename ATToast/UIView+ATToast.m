@@ -74,14 +74,14 @@
     });
     messageLabel.attributedText = message;
     
-    CGSize messageMaxSize = CGSizeMake(width, self.bounds.size.height * 0.8);
+    CGSize messageMaxSize = CGSizeMake(width-style.insets.left-style.insets.right, self.bounds.size.height * 0.8);
     CGSize messageExpectedSize = [messageLabel sizeThatFits:messageMaxSize];
     messageExpectedSize = CGSizeMake(MIN(messageMaxSize.width, messageExpectedSize.width), MIN(messageMaxSize.height, messageExpectedSize.height));
-
+    
     [messageLabel mas_updateConstraints:^(MASConstraintMaker *make) {
         make.height.mas_equalTo(ceilf(messageExpectedSize.height));
     }];
-
+    
     [contentView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.bottom.equalTo(messageLabel.mas_bottom).offset(style.insets.bottom);
         make.center.equalTo(self);
