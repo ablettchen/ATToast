@@ -42,7 +42,7 @@
         UIView *view = [UIView new];
         [self addSubview:view];
         [view mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(width);
+            make.width.mas_equalTo(ceilf(width));
         }];
         [self addSubview:view];
         view.layer.cornerRadius = style.cornerRadius;
