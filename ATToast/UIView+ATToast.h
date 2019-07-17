@@ -14,10 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class ATToastStyle;
 @interface UIView (ATToast)
 
-- (void)makeToast:(nonnull NSString *)message;
-- (void)makeToastAttributed:(nonnull NSAttributedString *)message;
-- (void)makeToast:(nonnull NSString *)message completion:(void(^__nullable)(void))completion;
-- (void)makeToastAttributed:(nonnull NSAttributedString *)message completion:(void(^__nullable)(void))completion;
+- (void)showToast:(nonnull NSString *)message;
+- (void)showToastAttributed:(nonnull NSAttributedString *)message;
+- (void)showToast:(nonnull NSString *)message completion:(void(^__nullable)(void))completion;
+- (void)showToastAttributed:(nonnull NSAttributedString *)message completion:(void(^__nullable)(void))completion;
 
 @end
 

@@ -123,19 +123,19 @@
 
 #pragma mark - public
 
-- (void)makeToast:(nonnull NSString *)message {
-    [self makeToastAttributed:[[NSAttributedString alloc] initWithString:message]];
+- (void)showToast:(nonnull NSString *)message {
+    [self showToastAttributed:[[NSAttributedString alloc] initWithString:message]];
 }
 
-- (void)makeToastAttributed:(nonnull NSAttributedString *)message {
-    [self makeToastAttributed:message completion:nil];
+- (void)showToastAttributed:(nonnull NSAttributedString *)message {
+    [self showToastAttributed:message completion:nil];
 }
 
-- (void)makeToast:(nonnull NSString *)message completion:(void(^__nullable)(void))completion {
-    [self makeToastAttributed:[[NSAttributedString alloc] initWithString:message] completion:completion];
+- (void)showToast:(nonnull NSString *)message completion:(void(^__nullable)(void))completion {
+    [self showToastAttributed:[[NSAttributedString alloc] initWithString:message] completion:completion];
 }
 
-- (void)makeToastAttributed:(nonnull NSAttributedString *)message completion:(void(^__nullable)(void))completion {
+- (void)showToastAttributed:(nonnull NSAttributedString *)message completion:(void(^__nullable)(void))completion {
     [self makeToastAttributed:message duration:[ATToastConfig defaultConfig].duration completion:completion];
 }
 
