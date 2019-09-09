@@ -105,7 +105,6 @@
                              [self hideToast:toast completion:completion];
                          });
                      }];
-    
 }
 
 - (void)hideToast:(nonnull UIView *)toast completion:(void(^__nullable)(void))completion {
