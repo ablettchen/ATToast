@@ -19,7 +19,7 @@ NSRange range = [string rangeOfString:@"pod lib lint ATToast.podspec"];
 [attributedString addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:14] range:range];
 [attributedString addAttribute:NSUnderlineStyleAttributeName value:@(1) range:range];
 
-[self.view makeToastAttributed:attributedString];
+[self.view showToastAttributed:attributedString];
 ```
 
 ## Requirements
